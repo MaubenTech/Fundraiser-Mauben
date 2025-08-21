@@ -13,7 +13,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 export default function HomePage() {
-	const [raisedAmount, setRaisedAmount] = useState(1000000);
+	const [raisedAmount, setRaisedAmount] = useState(0);
 	const goalAmount = 20000000;
 	const progressPercentage = Math.round((raisedAmount / goalAmount) * 100);
 
@@ -52,7 +52,13 @@ export default function HomePage() {
 
 			{/* Hero Section */}
 			<section id="home" className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10 py-20 lg:py-32">
-				<div className="container mx-auto px-4">
+				<video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
+					<source src="/hero-section-background.mp4" type="video/mp4" />
+				</video>
+
+				<div className="absolute inset-0 bg-background/60 z-10"></div>
+
+				<div className="container mx-auto px-4 relative z-20">
 					<div className="max-w-4xl mx-auto text-center">
 						<ScrollAnimation animation="fadeInUp">
 							<h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-black text-foreground mb-6 leading-tight">
