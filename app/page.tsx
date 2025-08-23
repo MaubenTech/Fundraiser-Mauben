@@ -10,12 +10,21 @@ import TestimonialsCarousel from "@/components/testimonials-carousel";
 import CampaignUpdates from "@/components/campaign-updates";
 import ScrollAnimation from "@/components/scroll-animations";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function HomePage() {
 	const [raisedAmount, setRaisedAmount] = useState(0);
 	const goalAmount = 20000000;
 	const progressPercentage = Math.round((raisedAmount / goalAmount) * 100);
+
+	const videoRef = useRef<HTMLVideoElement>(null);
+
+	useEffect(() => {
+		const video = videoRef.current;
+		if (!video) return;
+
+		video.playbackRate = 0.5; // Slow playback
+	}, []);
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -52,8 +61,8 @@ export default function HomePage() {
 
 			{/* Hero Section */}
 			<section id="home" className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10 py-20 lg:py-32">
-				<video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
-					<source src="/hero-section-background.mp4" type="video/mp4" />
+				<video ref={videoRef} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover z-0">
+					<source src="/hero-section-background-joined.mp4" type="video/mp4" />
 				</video>
 
 				<div className="absolute inset-0 bg-background/60 z-10"></div>
