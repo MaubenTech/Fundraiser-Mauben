@@ -756,15 +756,15 @@ export default function DonationForm() {
 												</p>
 											</div>
 										</div>
-										{/* <Button
+										<Button
 											onClick={handleProceedToPayment}
 											className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 text-sm sm:text-base"
 											size="lg"
 											disabled={!donorInfo.name || !donorInfo.email || isSubmitting}>
 											<CreditCard className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
 											{isSubmitting ? "Processing..." : isPledge ? "Make Pledge" : "Proceed to Payment"}
-										</Button> */}
-										<div>
+										</Button>
+										{/* <div>
 											<p className="text-xs">Please make your transfers to this account</p>
 											<div className="w-full flex flex-col p-4 space-y-2 bg-[#efeef3] hover:bg-primary/90 text-black-foreground font-semibold py-3 text-sm sm:text-base rounded-lg">
 												<div className="flex justify-between">
@@ -780,7 +780,7 @@ export default function DonationForm() {
 													<p>Providus Bank</p>
 												</div>
 											</div>
-										</div>
+										</div> */}
 										<div className="text-xs text-muted-foreground text-center">
 											{isPledge
 												? "Your pledge will be saved securely. We'll remind you when it's time to donate."

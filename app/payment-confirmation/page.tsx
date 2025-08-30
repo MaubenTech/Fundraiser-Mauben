@@ -11,10 +11,10 @@ interface DonationData {
 	id: string;
 	amount: number;
 	tierBadge: string;
-	donorName: string;
-	donorEmail: string;
+	donor_name: string;
+	donor_email: string;
 	quantity: number;
-	donationType: string;
+	donation_type: string;
 }
 
 export default function PaymentConfirmationPage() {
@@ -86,6 +86,8 @@ export default function PaymentConfirmationPage() {
 					router.push("/");
 				}, 3000);
 			}
+
+			window.location.href = `/`;
 		} catch (error) {
 			console.error("[v0] Error updating payment status:", error);
 		} finally {
@@ -150,15 +152,16 @@ export default function PaymentConfirmationPage() {
 							<div className="space-y-4">
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">Donor Name:</span>
-									<span className="font-semibold">{donationData.donorName}</span>
+									<span className="font-semibold">{donationData.donor_name}</span>
 								</div>
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">Email:</span>
-									<span className="font-semibold">{donationData.donorEmail}</span>
+									<span className="font-semibold">{donationData.donor_email}</span>
 								</div>
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">Donation Type:</span>
-									<span className="font-semibold capitalize">{donationData.donationType.replace("-", " ")}</span>
+									<span className="font-semibold capitalize">{(donationData.donation_type ?? "").replace("-", " ")}</span>
+									{/* <span className="font-semibold capitalize">{JSON.stringify(donationData)}</span> */}
 								</div>
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">Amount per donation:</span>
