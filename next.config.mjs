@@ -10,7 +10,7 @@ const nextConfig = {
 		unoptimized: true,
 	},
 	basePath: "/donations",
-	assetPrefix: "/donations/",
+	assetPrefix: "/donations",
 };
 
 export default nextConfig;
