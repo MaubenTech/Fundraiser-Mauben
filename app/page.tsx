@@ -27,7 +27,7 @@ export default function HomePage() {
 
 	const fetchStats = async () => {
 		try {
-			const response = await fetch("/donations/stats");
+			const response = await fetch("/api/donations/stats");
 			if (response.ok) {
 				const data = await response.json();
 				setStats(data.stats);
