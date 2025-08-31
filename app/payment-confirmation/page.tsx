@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Copy, CheckCircle, Clock, ArrowLeft, Building2 } from "lucide-react";
+import { Copy, CheckCircle, Clock, ArrowLeft, Building2, X } from "lucide-react";
 
 interface DonationData {
 	id: string;
@@ -61,6 +61,10 @@ export default function PaymentConfirmationPage() {
 		setTimeout(() => setCopied(false), 2000);
 	};
 
+	const handleCancelClick = () => {
+		router.push("/");
+	};
+
 	const handlePaymentMade = async () => {
 		if (!donationData) return;
 
@@ -82,9 +86,10 @@ export default function PaymentConfirmationPage() {
 			if (response.ok) {
 				setIsConfirmed(true);
 				// Redirect to homepage after 3 seconds
-				setTimeout(() => {
-					router.push("/");
-				}, 3000);
+				// setTimeout(() => {
+				// 	router.push("/");
+				// }, 10000);
+				// Redirect to homepage after user clicks cancel
 			}
 		} catch (error) {
 			console.error("[v0] Error updating payment status:", error);
@@ -108,7 +113,12 @@ export default function PaymentConfirmationPage() {
 		return (
 			<div className="min-h-screen flex items-center justify-center p-4">
 				<Card className="max-w-md w-full text-center">
-					<CardContent className="p-8">
+					<CardContent className="p-8 relative">
+						<button
+							onClick={handleCancelClick}
+							className="absolute pr-8 right-0 top-0 rounded-full transition duration-200 ease-linear hover:text-black/30 self-end">
+							<X />
+						</button>
 						<CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
 						<h2 className="text-2xl font-bold text-foreground mb-4">Payment Confirmation Received</h2>
 						<p className="text-muted-foreground mb-6">
@@ -116,7 +126,7 @@ export default function PaymentConfirmationPage() {
 						</p>
 						<div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
 							<Clock className="h-4 w-4" />
-							<span>Redirecting to homepage in a few seconds...</span>
+							<span>Click the cancel button to redirect to homepage...</span>
 						</div>
 					</CardContent>
 				</Card>
