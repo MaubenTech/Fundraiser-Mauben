@@ -30,9 +30,12 @@ export async function GET() {
 		}
 
 		// const uniqueEmails = new Set(uniqueDonors.map((d: { donor_email: any }) => d.donor_email));
-		const uniqueEmails = new Set(uniqueDonors.map((d: { donor_name: any; donor_email: any }) => d.donor_email));
-		const unconfirmedEmails = uniqueDonors.filter((d: { donor_name: any; donor_email: any }) => d.donor_name === "unconfirmed");
-		const totalDonors = uniqueEmails.size + unconfirmedEmails.length;
+		const uniqueEmails = new Set(uniqueDonors.filter((d) => d.donor_email != "unconfirmed").map((d) => d.donor_email));
+		// console.log(uniqueEmails);
+		const uniqueUnconfirmedEmails = new Set(uniqueDonors.filter((d) => d.donor_email === "unconfirmed").map((d) => d.donor_name));
+		// console.log(uniqueUnconfirmedEmails);
+		// console.log(JSON.stringify(unconfirmedEmails));
+		const totalDonors = uniqueEmails.size + uniqueUnconfirmedEmails.size;
 		//NOTE: If all the emails of the donors are confirmed, there's no need for the unconfirmed line.
 
 		// Get recent donations for display
