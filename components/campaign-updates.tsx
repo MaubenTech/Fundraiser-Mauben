@@ -120,7 +120,7 @@ export default function CampaignUpdates() {
 						}}>
 						<div className="relative overflow-hidden">
 							<img
-								src={update.image || "/placeholder.svg"}
+								src={"/donations" + (update.image || "/placeholder.svg")}
 								alt={update.title}
 								className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
 							/>

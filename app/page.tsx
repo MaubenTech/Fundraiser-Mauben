@@ -69,7 +69,7 @@ export default function HomePage() {
 				<div className="container mx-auto px-4 py-4">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center space-x-2">
-							<Image src="/maubentech-logo.png" alt="MaubenTech Roots Logo" width={32} height={32} className="h-8 w-8" />
+							<Image src="/donations/maubentech-logo.png" alt="MaubenTech Roots Logo" width={32} height={32} className="h-8 w-8" />
 							<span className="text-lg sm:text-xl font-serif font-bold text-foreground">MaubenTech Roots</span>
 						</div>
 						<div className="hidden md:flex items-center space-x-8">
@@ -98,7 +98,7 @@ export default function HomePage() {
 			{/* Hero Section */}
 			<section id="home" className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10 py-12 sm:py-20 lg:py-32">
 				<video ref={videoRef} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover z-0">
-					<source src="/hero-section-background-joined.mp4" type="video/mp4" />
+					<source src="/donations/hero-section-background-joined.mp4" type="video/mp4" />
 				</video>
 
 				<div className="absolute inset-0 bg-background/60 z-10"></div>
@@ -234,7 +234,7 @@ export default function HomePage() {
 						<ScrollAnimation animation="fadeInLeft">
 							<div className="relative">
 								<Image
-									src="/breaking-barriers.jpg"
+									src="/donations/breaking-barriers.jpg"
 									alt="Students learning technology and coding"
 									width={600}
 									height={400}
