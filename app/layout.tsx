@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 	description: "Join MaubenTech Roots in transforming lives through technology education and digital literacy programs in Nigerian communities.",
 	generator: "v0.app",
 	icons: {
-		icon: "/favicon.ico",
+		icon: "/donations/favicon.ico",
 	},
 };
 
