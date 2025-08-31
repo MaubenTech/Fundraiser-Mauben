@@ -27,12 +27,13 @@ export default function HomePage() {
 
 	const fetchStats = async () => {
 		try {
-			const response = await fetch("/api/donations/stats");
+			const response = await fetch("/donations/api/donations/stats");
 			if (response.ok) {
 				const data = await response.json();
 				setStats(data.stats);
 			}
 		} catch (error) {
+			alert(error);
 			console.error("[v0] Error fetching donation stats:", error);
 		} finally {
 			setIsLoading(false);

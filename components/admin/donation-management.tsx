@@ -68,7 +68,7 @@ export default function DonationManagement() {
 
 	const fetchDonations = async () => {
 		try {
-			const response = await fetch("/api/admin/donations");
+			const response = await fetch("/donations/api/admin/donations");
 			if (response.ok) {
 				const data = await response.json();
 				setDonations(data.donations);
@@ -80,7 +80,7 @@ export default function DonationManagement() {
 
 	const fetchStats = async () => {
 		try {
-			const response = await fetch("/api/donations/stats");
+			const response = await fetch("/donations/api/donations/stats");
 			if (response.ok) {
 				const data = await response.json();
 				setStats(data.stats);
@@ -107,7 +107,7 @@ export default function DonationManagement() {
 
 		setIsSubmitting(true);
 		try {
-			const response = await fetch("/api/admin/donations", {
+			const response = await fetch("/donations/api/admin/donations", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -151,7 +151,7 @@ export default function DonationManagement() {
 		if (!confirm("Are you sure you want to delete this donation?")) return;
 
 		try {
-			const response = await fetch(`/api/donations/${id}`, {
+			const response = await fetch(`/donations/api/donations/${id}`, {
 				method: "DELETE",
 			});
 
@@ -172,7 +172,7 @@ export default function DonationManagement() {
 		if (!confirm("Are you sure you want to confirm this payment?")) return;
 
 		try {
-			const response = await fetch(`/api/donations/${id}`, {
+			const response = await fetch(`/donations/api/donations/${id}`, {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
@@ -200,7 +200,7 @@ export default function DonationManagement() {
 		if (!confirm("Are you sure you want to reject this payment?")) return;
 
 		try {
-			const response = await fetch(`/api/donations/${id}`, {
+			const response = await fetch(`/donations/api/donations/${id}`, {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",

@@ -4,7 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
 	try {
 		const supabase = await createClient();
-		const { data: donation, error } = await supabase.from("donations").select("*").eq("id", params.id).single();
+		const { id } = await params;
+		const { data: donation, error } = await supabase.from("donations").select("*").eq("id", id).single();
 
 		if (error) {
 			if (error.code === "PGRST116") {
@@ -24,6 +25,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
 	try {
 		const body = await request.json();
+		console.log(JSON.stringify(body));
+		const { id } = await params;
 
 		const supabase = await createClient();
 		const { data: donation, error } = await supabase
@@ -32,7 +35,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 				...body,
 				updated_at: new Date().toISOString(),
 			})
-			.eq("id", params.id)
+			.eq("id", id)
 			.select()
 			.single();
 
@@ -54,7 +57,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
 	try {
 		const supabase = await createClient();
-		const { error } = await supabase.from("donations").delete().eq("id", params.id);
+		const { id } = await params;
+		const { error } = await supabase.from("donations").delete().eq("id", id);
 
 		if (error) {
 			console.error("Supabase error:", error);

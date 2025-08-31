@@ -202,7 +202,7 @@ export default function DonationForm() {
 						isAnonymous: donorInfo.anonymous,
 					};
 
-					const response = await fetch("/api/pledges", {
+					const response = await fetch("/donations/api/pledges", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json",
@@ -235,7 +235,7 @@ export default function DonationForm() {
 					payment_status: "pending",
 				};
 
-				const response = await fetch("/api/donations", {
+				const response = await fetch("/donations/api/donations", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -250,10 +250,11 @@ export default function DonationForm() {
 				const result = await response.json();
 				console.log("[v0] Donation record created:", result.donation);
 
-				window.location.href = `/payment-confirmation?donationId=${result.donation.id}`;
+				window.location.href = `/donations/payment-confirmation?donationId=${result.donation.id}`;
 			} catch (error) {
-				console.error("[v0] Error creating donation:", error);
-				alert("There was an issue saving your donation. Please try again.");
+				// console.error("[v0] Error creating donation:", error);
+				// alert("There was an issue saving your donation. Please try again.");
+				alert(error);
 			} finally {
 				setIsSubmitting(false);
 			}
@@ -263,7 +264,7 @@ export default function DonationForm() {
 	const handlePaymentSuccess = async (data: any) => {
 		try {
 			if (paymentData?.donationId) {
-				const response = await fetch(`/api/donations/${paymentData.donationId}`, {
+				const response = await fetch(`/donations/api/donations/${paymentData.donationId}`, {
 					method: "PATCH",
 					headers: {
 						"Content-Type": "application/json",

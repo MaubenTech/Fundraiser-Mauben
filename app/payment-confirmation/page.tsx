@@ -42,7 +42,7 @@ export default function PaymentConfirmationPage() {
 
 	const fetchDonationData = async (donationId: string) => {
 		try {
-			const response = await fetch(`/api/donations/${donationId}`);
+			const response = await fetch(`/donations/api/donations/${donationId}`);
 			if (response.ok) {
 				const data = await response.json();
 				setDonationData(data.donation);
@@ -68,14 +68,14 @@ export default function PaymentConfirmationPage() {
 
 		try {
 			// Update donation status to unconfirmed
-			const response = await fetch(`/api/donations/${donationData.id}`, {
+			const response = await fetch(`/donations/api/donations/${donationData.id}`, {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
 					payment_status: "pending",
-					paymentMethod: "bank_transfer",
+					payment_method: "bank_transfer",
 				}),
 			});
 
@@ -86,8 +86,6 @@ export default function PaymentConfirmationPage() {
 					router.push("/");
 				}, 3000);
 			}
-
-			window.location.href = `/`;
 		} catch (error) {
 			console.error("[v0] Error updating payment status:", error);
 		} finally {
