@@ -22,15 +22,18 @@ export async function GET() {
 		}, 0);
 
 		// Get unique donor count
-		const { data: uniqueDonors, error: donorsError } = await supabase.from("donations").select("donor_email").eq("payment_status", "completed");
+		const { data: uniqueDonors, error: donorsError } = await supabase.from("donations").select("donor_name, donor_email").eq("payment_status", "completed");
 
 		if (donorsError) {
 			console.error("Supabase error:", donorsError);
 			return NextResponse.json({ error: "Failed to fetch donor stats" }, { status: 500 });
 		}
 
-		const uniqueEmails = new Set(uniqueDonors.map((d: { donor_email: any; }) => d.donor_email));
-		const totalDonors = uniqueEmails.size;
+		// const uniqueEmails = new Set(uniqueDonors.map((d: { donor_email: any }) => d.donor_email));
+		const uniqueEmails = new Set(uniqueDonors.map((d: { donor_name: any; donor_email: any }) => d.donor_email));
+		const unconfirmedEmails = uniqueDonors.filter((d: { donor_name: any; donor_email: any }) => d.donor_name === "unconfirmed");
+		const totalDonors = uniqueEmails.size + unconfirmedEmails.length;
+		//NOTE: If all the emails of the donors are confirmed, there's no need for the unconfirmed line.
 
 		// Get recent donations for display
 		const { data: recentDonations, error: recentError } = await supabase
@@ -49,7 +52,7 @@ export async function GET() {
 			totalRaised,
 			totalDonors,
 			goalAmount: 20000000, // 20 million naira goal
-			recentDonations: recentDonations.map((d: { donor_name: any; amount: any; created_at: any; }) => ({
+			recentDonations: recentDonations.map((d: { donor_name: any; amount: any; created_at: any }) => ({
 				donorName: d.donor_name,
 				amount: d.amount,
 				date: d.created_at,
