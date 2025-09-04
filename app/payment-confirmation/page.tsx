@@ -10,7 +10,7 @@ import { Copy, CheckCircle, Clock, ArrowLeft, Building2, X } from "lucide-react"
 interface DonationData {
 	id: string;
 	amount: number;
-	tierBadge: string;
+	tier_badge: string;
 	donor_name: string;
 	donor_email: string;
 	quantity: number;
@@ -153,7 +153,7 @@ export default function PaymentConfirmationPage() {
 								<div className="text-3xl font-bold text-primary mb-2">₦{(donationData.amount * donationData.quantity).toLocaleString()}</div>
 								<Badge className="bg-primary/10 text-primary">
 									{donationData.quantity > 1 ? `${donationData.quantity}x ` : ""}
-									{donationData.tierBadge}
+									{donationData.tier_badge}
 								</Badge>
 							</div>
 
