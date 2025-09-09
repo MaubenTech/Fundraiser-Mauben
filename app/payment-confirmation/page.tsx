@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Copy, CheckCircle, Clock, ArrowLeft, Building2, X } from "lucide-react";
+import { CheckCircle, Clock, ArrowLeft, X, CreditCard } from "lucide-react";
+import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 
 interface DonationData {
 	id: string;
@@ -25,6 +26,48 @@ export default function PaymentConfirmationPage() {
 	const [isConfirmed, setIsConfirmed] = useState(false);
 	const [copied, setCopied] = useState(false);
 
+	const getFlutterwaveConfig = () => {
+		if (!donationData) {
+			return {
+				public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_API_KEY_TEST || "",
+				tx_ref: `temp_${Date.now()}`,
+				amount: 1000,
+				currency: "NGN",
+				payment_options: "card,mobilemoney,ussd",
+				customer: {
+					email: "temp@example.com",
+					phone_number: "",
+					name: "Temp User",
+				},
+				customizations: {
+					title: "MaubenTech Roots Donation",
+					description: "Donation",
+					logo: "/maubentech-logo.png",
+				},
+			};
+		}
+
+		return {
+			public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_API_KEY_LIVE || "",
+			tx_ref: `donation_${donationData.id}_${Date.now()}`,
+			amount: donationData.amount * donationData.quantity,
+			currency: "NGN",
+			payment_options: "card,mobilemoney,ussd",
+			customer: {
+				email: donationData.donor_email,
+				phone_number: "",
+				name: donationData.donor_name,
+			},
+			customizations: {
+				title: "MaubenTech Roots Donation",
+				description: `${donationData.tier_badge} donation`,
+				logo: "/maubentech-logo.png",
+			},
+		};
+	};
+
+	const flutterwavePayment = useFlutterwave(getFlutterwaveConfig());
+
 	const bankDetails = {
 		accountNumber: "1308190088",
 		bankName: "Providus Bank",
@@ -33,24 +76,39 @@ export default function PaymentConfirmationPage() {
 
 	useEffect(() => {
 		const donationId = searchParams.get("donationId");
+		console.log("[v0] URL search params:", searchParams.toString());
+		console.log("[v0] Donation ID from params:", donationId);
+
 		if (donationId) {
 			fetchDonationData(donationId);
 		} else {
+			console.error("[v0] No donationId found in URL parameters");
+			// Instead of immediately redirecting, show an error message
+			alert("No donation ID found. Please try creating your donation again.");
 			router.push("/");
 		}
 	}, [searchParams, router]);
 
 	const fetchDonationData = async (donationId: string) => {
+		console.log("[v0] Fetching donation data for ID:", donationId);
 		try {
 			const response = await fetch(`/donations/api/donations/${donationId}`);
+			console.log("[v0] API response status:", response.status);
+
 			if (response.ok) {
 				const data = await response.json();
+				console.log("[v0] API response data:", data);
 				setDonationData(data.donation);
+				console.log("[v0] Donation data loaded:", data.donation);
 			} else {
+				const errorText = await response.text();
+				console.error("[v0] Failed to fetch donation data:", response.status, errorText);
+				alert("Failed to load donation details. Please try again.");
 				router.push("/");
 			}
 		} catch (error) {
 			console.error("[v0] Error fetching donation data:", error);
+			alert("Error loading donation details. Please check your connection and try again.");
 			router.push("/");
 		}
 	};
@@ -65,31 +123,54 @@ export default function PaymentConfirmationPage() {
 		router.push("/");
 	};
 
-	const handlePaymentMade = async () => {
+	const handlePayNow = () => {
+		console.log("Pay Now clicked");
+		console.log("Paying now");
+
+		if (!donationData) {
+			console.error("No donation data available");
+			return;
+		}
+
+		console.log("Donation Data present");
+
+		flutterwavePayment({
+			callback: (response) => {
+				console.log("Flutterwave payment response:", response);
+				if (response.status === "completed") {
+					// Update donation status to confirmed
+					updatePaymentStatus(response.status, "flutterwave", response.transaction_id.toString());
+				} else {
+					console.error("[v0] Payment failed:", response);
+				}
+				closePaymentModal();
+			},
+			onClose: () => {
+				console.log("Payment modal closed");
+			},
+		});
+	};
+
+	const updatePaymentStatus = async (status: string, method: string, transactionId?: string) => {
 		if (!donationData) return;
 
 		setIsConfirming(true);
 
 		try {
-			// Update donation status to unconfirmed
 			const response = await fetch(`/donations/api/donations/${donationData.id}`, {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					payment_status: "pending",
-					payment_method: "bank_transfer",
+					payment_status: status,
+					payment_method: method,
+					transaction_id: transactionId,
 				}),
 			});
 
 			if (response.ok) {
 				setIsConfirmed(true);
-				// Redirect to homepage after 3 seconds
-				// setTimeout(() => {
-				// 	router.push("/");
-				// }, 10000);
-				// Redirect to homepage after user clicks cancel
 			}
 		} catch (error) {
 			console.error("[v0] Error updating payment status:", error);
@@ -169,7 +250,6 @@ export default function PaymentConfirmationPage() {
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">Donation Type:</span>
 									<span className="font-semibold capitalize">{(donationData.donation_type ?? "").replace("-", " ")}</span>
-									{/* <span className="font-semibold capitalize">{JSON.stringify(donationData)}</span> */}
 								</div>
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">Amount per donation:</span>
@@ -185,61 +265,23 @@ export default function PaymentConfirmationPage() {
 						</CardContent>
 					</Card>
 
-					{/* Bank Transfer Details */}
 					<Card>
 						<CardHeader>
 							<CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
-								<Building2 className="h-6 w-6 text-primary" />
-								Bank Transfer Details
+								<CreditCard className="h-6 w-6 text-primary" />
+								Payment Instructions
 							</CardTitle>
 						</CardHeader>
 						<CardContent className="space-y-6">
-							<div className="bg-muted/30 p-6 rounded-lg space-y-4">
-								<div className="space-y-2">
-									<label className="text-sm font-semibold text-muted-foreground">Account Number</label>
-									<div className="flex items-center justify-between bg-background p-3 rounded border">
-										<span className="font-mono text-lg font-bold">{bankDetails.accountNumber}</span>
-										<Button size="sm" variant="outline" onClick={() => copyToClipboard(bankDetails.accountNumber)}>
-											<Copy className="h-4 w-4" />
-										</Button>
-									</div>
-								</div>
-
-								<div className="space-y-2">
-									<label className="text-sm font-semibold text-muted-foreground">Bank Name</label>
-									<div className="flex items-center justify-between bg-background p-3 rounded border">
-										<span className="font-semibold">{bankDetails.bankName}</span>
-										<Button size="sm" variant="outline" onClick={() => copyToClipboard(bankDetails.bankName)}>
-											<Copy className="h-4 w-4" />
-										</Button>
-									</div>
-								</div>
-
-								<div className="space-y-2">
-									<label className="text-sm font-semibold text-muted-foreground">Account Name</label>
-									<div className="flex items-center justify-between bg-background p-3 rounded border">
-										<span className="font-semibold">{bankDetails.accountName}</span>
-										<Button size="sm" variant="outline" onClick={() => copyToClipboard(bankDetails.accountName)}>
-											<Copy className="h-4 w-4" />
-										</Button>
-									</div>
-								</div>
-							</div>
-
-							{copied && <div className="text-center text-sm text-green-600 font-semibold">✓ Copied to clipboard!</div>}
-
 							<div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-								<h4 className="font-semibold text-blue-900 mb-2">Transfer Instructions:</h4>
 								<ul className="text-sm text-blue-800 space-y-1">
-									<li>• Transfer exactly ₦{(donationData.amount * donationData.quantity).toLocaleString()}</li>
-									<li>• Use your name as the transfer description</li>
-									<li>• Keep your transfer receipt for records</li>
-									<li>• Click "I've Made Payment" after completing the transfer</li>
+									<li>• Use your name as transfer description</li>
+									<li>• Click on the Pay Now button below to proceed</li>
 								</ul>
 							</div>
 
 							<Button
-								onClick={handlePaymentMade}
+								onClick={handlePayNow}
 								disabled={isConfirming}
 								className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3"
 								size="lg">
@@ -250,14 +292,14 @@ export default function PaymentConfirmationPage() {
 									</>
 								) : (
 									<>
-										<CheckCircle className="h-5 w-5 mr-2" />
-										I've Made Payment
+										<CreditCard className="h-5 w-5 mr-2" />
+										Pay Now
 									</>
 								)}
 							</Button>
 
 							<p className="text-xs text-muted-foreground text-center">
-								Our agents will verify your payment within 24 hours and send you a confirmation email.
+								Secure payment powered by Flutterwave. Your donation will be processed immediately.
 							</p>
 						</CardContent>
 					</Card>

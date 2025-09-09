@@ -226,9 +226,9 @@ export default function DonationManagement() {
 
 	const filteredDonations = donations.filter((donation) => {
 		const matchesSearch =
-			donation.donorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			donation.donorEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			donation.id.toLowerCase().includes(searchTerm.toLowerCase());
+			(donation.donorName?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+			(donation.donorEmail?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+			(donation.id?.toLowerCase() || "").includes(searchTerm.toLowerCase());
 
 		const matchesStatus = statusFilter === "all" || donation.status === statusFilter;
 		const matchesType = typeFilter === "all" || donation.donationType === typeFilter;
@@ -297,27 +297,27 @@ export default function DonationManagement() {
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 				<Card className="border-border bg-card">
 					<CardContent className="p-4">
-						<div className="text-2xl font-bold text-foreground">₦{stats.totalRaised.toLocaleString()}</div>
+						<div className="text-2xl font-bold text-foreground">₦{(stats.totalRaised || 0).toLocaleString()}</div>
 						<p className="text-sm text-muted-foreground">Total Donations</p>
 					</CardContent>
 				</Card>
 				<Card className="border-border bg-card">
 					<CardContent className="p-4">
-						<div className="text-2xl font-bold text-foreground">{stats.totalDonors.toLocaleString()}</div>
+						<div className="text-2xl font-bold text-foreground">{(stats.totalDonors || 0).toLocaleString()}</div>
 						<p className="text-sm text-muted-foreground">Total Donors</p>
 					</CardContent>
 				</Card>
 				<Card className="border-border bg-card">
 					<CardContent className="p-4">
 						<div className="text-2xl font-bold text-foreground">
-							₦{stats.totalDonors > 0 ? Math.round(stats.totalRaised / stats.totalDonors).toLocaleString() : "0"}
+							₦{(stats.totalDonors || 0) > 0 ? Math.round((stats.totalRaised || 0) / (stats.totalDonors || 1)).toLocaleString() : "0"}
 						</div>
 						<p className="text-sm text-muted-foreground">Average Donation</p>
 					</CardContent>
 				</Card>
 				<Card className="border-border bg-card">
 					<CardContent className="p-4">
-						<div className="text-2xl font-bold text-foreground">{stats.totalDonations.toLocaleString()}</div>
+						<div className="text-2xl font-bold text-foreground">{(stats.totalDonations || 0).toLocaleString()}</div>
 						<p className="text-sm text-muted-foreground">Total Transactions</p>
 					</CardContent>
 				</Card>
